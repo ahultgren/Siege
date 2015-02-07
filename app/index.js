@@ -8,26 +8,49 @@ var world = map.create({
   width: 20,
   height: 20
 });
+var setType = R.curry((value, target) => target.type = value);
+var getRandom = (source) => source[Math.floor(Math.random() * source.length)];
 
-// 2. add centerpoint to list of land
+var makeWorldPatch = function (origin, size, type, on) {
+  // Add a forest
+  var patch = makePatch({
+    source: world,
+    patch: [origin],
+    size,
+    pushCondition: (tile) => tile.type === on
+  });
 
-var landTiles = makePatch({
-  source: world,
-  patch: [world.getTile(world, [10, 10])],
-  exitCondition: (patch) => patch.length >= 100,
-  pushCondition: R.always(true)
-});
+  patch.forEach(setType(type));
 
-// 8. turn tiles in land-array into land
-landTiles.forEach((tile) => {
-  tile.type = 'land';
-});
+  return patch;
+};
+
+// Make land
+var landTiles = makeWorldPatch(world.getTile(world, [9, 9]), 200, 'land');
+
+// Add a forest
+makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
+makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
+makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
+makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
+makeWorldPatch(getRandom(landTiles), 10, 'forest', 'land');
+makeWorldPatch(getRandom(landTiles), 15, 'forest', 'land');
+
+// Add some mountains
+makeWorldPatch(getRandom(landTiles), 3, 'mountain', 'land');
+makeWorldPatch(getRandom(landTiles), 4, 'mountain', 'land');
+makeWorldPatch(getRandom(landTiles), 5, 'mountain', 'land');
 
 // 9. Draw tiles
 var drawMap = (map) => {
   console.log(map.rows.map((row) => {
     return row.map(({type}) => {
-      return type === 'land' ? '██' : '~~';
+      switch (type) {
+        case 'land': return '██';
+        case 'forest': return '▒▒';
+        case 'mountain': return '▲▲';
+        default: return '~~';
+      }
     })
     .join('');
   })
