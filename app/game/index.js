@@ -2,7 +2,8 @@
 
 var R = require('ramda');
 var map = require('./map');
-var patchmaker = require('./patch').make;
+var patchmaker = require('./area').patch;
+var trailmaker = require('./area').ant;
 
 /* Helpers
 ============================================================================= */
@@ -31,6 +32,21 @@ var makePatch = R.curryN(4, (world, origin, size, type, on, notNear) => {
   return patch;
 });
 
+var makeTrail = R.curryN(4, (world, origin, size, type, on, notNear) => {
+  var trail = trailmaker({
+    source: world,
+    trail: [origin],
+    size,
+    pushCondition: notNear ?
+      (tile) => tileIs(on)(tile) && !tileIsNear(world, notNear)(tile) :
+      tileIs(on)
+  });
+
+  trail.forEach(setType(type));
+
+  return trail;
+});
+
 /* API
 ============================================================================= */
 
@@ -39,6 +55,7 @@ exports.create = function ({width, height}) {
 
   var world = game.map = map.create({ width, height });
   var makeWorldPatch = makePatch(world);
+  var makeWorldTrail = makeTrail(world);
   var noOfTiles = width * height;
   var centerTile = world.getTile(world, [Math.floor(width/2), Math.floor(height/2)]);
 
@@ -47,6 +64,11 @@ exports.create = function ({width, height}) {
 
   // Make land
   var landTiles = makeWorldPatch(centerTile, noOfTiles/2, 'land', 'sea');
+
+  // Moar rivers
+  range0(randomInt(2) + 2).forEach(() => {
+    makeWorldTrail(getRandom(landTiles), randomInt(10) + 10, 'river', 'land');
+  });
 
   // Add forests
   range0(randomInt(5) + 5).forEach(() => {

@@ -12,6 +12,7 @@ var clGraphics = {
   land: '██',
   forest: '▒▒',
   mountain: '▲▲',
+  river: '||',
   default: '  ',
 };
 
