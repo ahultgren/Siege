@@ -17,10 +17,7 @@ var clGraphics = {
 
 var drawMap = (map) => {
   console.log(map.rows.map((row) => {
-    return row.map(({type}) => {
-      return clGraphics[type] || clGraphics.default
-    })
-    .join('');
+    return row.map(({type}) => clGraphics[type] || clGraphics.default).join('');
   })
   .join('\n'));
 };

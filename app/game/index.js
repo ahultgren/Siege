@@ -1,19 +1,22 @@
 'use strict';
 
-// 1. generate map
 var R = require('ramda');
 var map = require('./map');
 var patchmaker = require('./patch').make;
 
+/* Helpers
+============================================================================= */
+
+var range0 = R.times(R.identity);
 var setType = R.curry((value, target) => target.type = value);
-var getRandom = (source) => source[Math.floor(Math.random() * source.length)];
+var randomInt = (n = 1) => Math.floor(Math.random() * n);
+var getRandom = (source) => source[randomInt(source.length)];
 var tileIs = (on) => (tile) => tile.type === on;
 var tileIsNear = (world, near) => (tile) => {
   return world.getAdjacent(world, tile).some((adjacent) => adjacent.type === near);
 };
 
 var makePatch = R.curryN(4, (world, origin, size, type, on, notNear) => {
-  // Add a forest
   var patch = patchmaker({
     source: world,
     patch: [origin],
@@ -28,32 +31,34 @@ var makePatch = R.curryN(4, (world, origin, size, type, on, notNear) => {
   return patch;
 });
 
+/* API
+============================================================================= */
+
 exports.create = function ({width, height}) {
   var game = Object.create(exports);
 
   var world = game.map = map.create({ width, height });
   var makeWorldPatch = makePatch(world);
+  var noOfTiles = width * height;
+  var centerTile = world.getTile(world, [Math.floor(width/2), Math.floor(height/2)]);
 
   // Turn world into sea
   world.getAllTiles(world).forEach(setType('sea'));
 
   // Make land
-  var landTiles = makeWorldPatch(world.getTile(world, [9, 9]), 200, 'land', 'sea');
+  var landTiles = makeWorldPatch(centerTile, noOfTiles/2, 'land', 'sea');
 
   // Add forests
-  makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
-  makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
-  makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
-  makeWorldPatch(getRandom(landTiles), 5, 'forest', 'land');
-  makeWorldPatch(getRandom(landTiles), 10, 'forest', 'land');
-  makeWorldPatch(getRandom(landTiles), 15, 'forest', 'land');
+  range0(randomInt(5) + 5).forEach(() => {
+    makeWorldPatch(getRandom(landTiles), randomInt(10) + 10, 'forest', 'land');
+  });
 
   // Add some mountains
-  makeWorldPatch(getRandom(landTiles), 5, 'mountain', 'land', 'sea');
-  makeWorldPatch(getRandom(landTiles), 5, 'mountain', 'land', 'sea');
-  makeWorldPatch(getRandom(landTiles), 5, 'mountain', 'land', 'sea');
+  range0(randomInt(3) + 2).forEach(() => {
+    makeWorldPatch(getRandom(landTiles), randomInt(5) + 3, 'mountain', 'land', 'sea');
+  });
 
-  // More forests after mountains, to not prevent mountains from growing
+  // More forests after mountains, which do not prevent mountains from growing
   makeWorldPatch(getRandom(landTiles), 15, 'forest', 'land');
 
   return game;
