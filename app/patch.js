@@ -19,8 +19,8 @@ exports.make = ({source, patch, size, pushCondition}) => {
     let originTile = patch[Math.floor(Math.random() * patch.length)];
 
     // Choose a tile in random direction
-    let direction = randomAdjacent();
-    let nextTile = source.getAdjacent(source, originTile, direction);
+    let direction = randomDir();
+    let nextTile = getAdjacent(source, originTile, direction);
 
     // Add to patch if not already in it
     if(nextTile && patch.indexOf(nextTile) === -1 && pushCondition(nextTile)) {
@@ -31,6 +31,11 @@ exports.make = ({source, patch, size, pushCondition}) => {
   return patch;
 };
 
-function randomAdjacent () {
+function randomDir () {
   return [(Math.floor(Math.random() * 3)) - 1, (Math.floor(Math.random() * 3)) - 1];
+}
+
+function getAdjacent (map, {position}, [dx, dy]) {
+  let [sx, sy] = position;
+  return map.getTile(map, [sx + dx, sy + dy]);
 }

@@ -26,7 +26,15 @@ exports.create = function (settings = {width: 0, height: 0}) {
 
 exports.getTile = (map, [x, y]) => map.rows[y] && map.rows[y][x] || false;
 
-exports.getAdjacent = (map, {position}, [dx, dy]) => {
-  let [sx, sy] = position;
-  return map.getTile(map, [sx + dx, sy + dy]);
+exports.getAllTiles = (map) => [].concat(...map.rows);
+
+exports.getAdjacent = (map, {position}) => {
+  let [x, y] = position;
+
+  return [
+    exports.getTile(map, [x + 1, y]),
+    exports.getTile(map, [x, y + 1]),
+    exports.getTile(map, [x - 1, y]),
+    exports.getTile(map, [x, y - 1])
+  ];
 };
