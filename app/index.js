@@ -11,6 +11,7 @@ var clGraphics = {
   sea: '~~',
   land: '██',
   forest: '▒▒',
+  hill: '▴▴',
   mountain: '▲▲',
   river: '||',
   default: '  ',
