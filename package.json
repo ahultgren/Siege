@@ -24,6 +24,7 @@
     "vinyl-source-stream": "^1.0.0"
   },
   "dependencies": {
+    "colors": "^1.0.3",
     "perlin": "^1.0.0",
     "ramda": "^0.9.1"
   }

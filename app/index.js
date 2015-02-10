@@ -1,5 +1,7 @@
 'use strict';
 
+require('colors');
+
 var game = require('./game');
 
 var testGame = game.create({
@@ -8,12 +10,12 @@ var testGame = game.create({
 });
 
 var clGraphics = {
-  sea: '~~',
-  land: '██',
-  forest: '▒▒',
-  hill: '▴▴',
-  mountain: '▲▲',
-  river: '||',
+  sea: '~~'.bgBlue.cyan,
+  land: '  '.inverse,
+  forest: '  '.bgGreen,
+  hill: '▴▴'.inverse,
+  mountain: '▲▲'.inverse,
+  river: '——'.inverse,
   default: '  ',
 };
 
