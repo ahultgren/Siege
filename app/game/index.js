@@ -4,6 +4,7 @@ var R = require('ramda');
 var map = require('./map');
 var patchmaker = require('./area').patch;
 var topology = require('./topology');
+var river = require('./river');
 
 /* Helpers
 ============================================================================= */
@@ -53,12 +54,12 @@ exports.create = ({width, height}) => {
   topology.generate(landTiles, ['river', 'river', 'river', 'river', 'land', 'land', 'land', 'land', 'land', 'land', 'hill', 'mountain', 'mountain', 'mountain']);
 
   // Add forests
-  range0(randomInt(3) + 3).forEach(() => {
+  range0(randomInt(3) + 4).forEach(() => {
     makeWorldPatch(getRandom(landTiles), randomInt(10) + 10, 'forest', 'land');
   });
 
-  // More forests after mountains, which do not prevent mountains from growing
-  makeWorldPatch(getRandom(landTiles), 15, 'forest', 'land');
+  // Connect rivers
+  river.connect(world);
 
   return game;
 };

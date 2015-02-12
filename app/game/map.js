@@ -33,8 +33,19 @@ exports.getAdjacent = (map, {position}) => {
 
   return [
     exports.getTile(map, [x + 1, y]),
+    exports.getTile(map, [x + 1, y + 1]),
     exports.getTile(map, [x, y + 1]),
+    exports.getTile(map, [x - 1, y + 1]),
     exports.getTile(map, [x - 1, y]),
-    exports.getTile(map, [x, y - 1])
-  ];
+    exports.getTile(map, [x - 1, y - 1]),
+    exports.getTile(map, [x, y - 1]),
+    exports.getTile(map, [x + 1, y - 1]),
+  ].filter(Boolean);
+};
+
+exports.isNextToEachOther = (map, [a, b]) => {
+  var nextToA = map.getAdjacent(map, a);
+  var nextToB = map.getAdjacent(map, b);
+
+  return nextToA.indexOf(b) > -1 || nextToB.indexOf(a) > -1;
 };
