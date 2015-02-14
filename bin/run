@@ -1,8 +1,10 @@
+#!/usr/bin/env node
+
 'use strict';
 
 require('colors');
 
-var game = require('./game');
+var game = require('../app/shared/game');
 
 var testGame = game.create({
   width: 20,
@@ -19,11 +21,11 @@ var clGraphics = {
   default: '  ',
 };
 
-var drawMap = (map) => {
-  console.log(map.rows.map((row) => {
+var renderMap = (map) => {
+  return map.rows.map((row) => {
     return row.map(({type}) => clGraphics[type] || clGraphics.default).join('');
   })
-  .join('\n'));
+  .join('\n');
 };
 
-drawMap(testGame.map);
+console.log(renderMap(testGame.map));

@@ -1,6 +1,5 @@
 'use strict';
 
-var R = require('ramda');
 var isRiver = (tile) => tile.type === 'river';
 
 /**
