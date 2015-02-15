@@ -39,7 +39,8 @@ gulp.task('lint', function() {
       undef: true,
       unused: true,
       trailing: true,
-      node: true
+      node: true,
+      browser: true
     }))
     .on('error', handleError)
     .pipe(jshint.reporter('jshint-stylish'));
