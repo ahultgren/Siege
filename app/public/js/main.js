@@ -54,6 +54,7 @@ var generateTileBitmask = (map, tile, adjacentType) => {
 
 var allTiles = [].concat(...world.map.rows);
 var landTiles = allTiles.filter(({type}) => type === 'land');
+var seaTiles = allTiles.filter(({type}) => type === 'sea');
 
 allTiles.forEach((tile) => {
   let [x, y] = tile.position;
@@ -66,7 +67,7 @@ allTiles.forEach((tile) => {
   ctx.strokeRect(...topLeft, tileSize, tileSize);
 });
 
-var drawPath = (ctx, ...[start, ...points]) => {
+var drawPath = (ctx, start, ...points) => {
   ctx.beginPath();
   ctx.moveTo(...start);
   points.forEach(point => ctx.lineTo(...point));
@@ -111,6 +112,53 @@ landTiles.forEach((tile) => {
 
   // Top right
   if((adjacentMask & (64|128|1)) === (64|128|1)) {
+    drawPath(ctx,
+      [topLeft[0] + tileSize/2, topLeft[1]],
+      [topLeft[0] + tileSize, topLeft[1]],
+      [topLeft[0] + tileSize, topLeft[1] + tileSize/2]
+    );
+  }
+
+});
+
+seaTiles.forEach((tile) => {
+  let [x, y] = tile.position;
+  let topLeft = [x * tileSize, y * tileSize];
+  let adjacentMask = generateTileBitmask(world.map, tile, 'land');
+
+  ctx.fillStyle = colors.land;
+
+  // [TODO] Automate this?
+
+  // Bottom right
+  if((adjacentMask & (1|4)) === (1|4)) {
+    drawPath(ctx,
+      [topLeft[0] + tileSize, topLeft[1] + tileSize/2],
+      [topLeft[0] + tileSize, topLeft[1] + tileSize],
+      [topLeft[0] + tileSize/2, topLeft[1] + tileSize]
+    );
+  }
+
+  // Bottom left
+  if((adjacentMask & (4|16)) === (4|16)) {
+    drawPath(ctx,
+      [topLeft[0] + tileSize/2, topLeft[1] + tileSize],
+      [topLeft[0], topLeft[1] + tileSize],
+      [topLeft[0], topLeft[1] + tileSize/2]
+    );
+  }
+
+  // Top left
+  if((adjacentMask & (16|64)) === (16|64)) {
+    drawPath(ctx,
+      [topLeft[0], topLeft[1] + tileSize/2],
+      [topLeft[0], topLeft[1]],
+      [topLeft[0] + tileSize/2, topLeft[1]]
+    );
+  }
+
+  // Top right
+  if((adjacentMask & (64|1)) === (64|1)) {
     drawPath(ctx,
       [topLeft[0] + tileSize/2, topLeft[1]],
       [topLeft[0] + tileSize, topLeft[1]],
