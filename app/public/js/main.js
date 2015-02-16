@@ -11,7 +11,7 @@ var heightPx = height * tileSize;
 
 var colors = {
   sea: '#039',
-  land: '#6f3',
+  plains: '#6f3',
   forest: '#390',
   hill: '#463',
   mountain: '#333',
@@ -60,7 +60,10 @@ allTiles.forEach((tile) => {
   let [x, y] = tile.position;
   let topLeft = [x * tileSize, y * tileSize];
 
-  ctx.fillStyle = colors[tile.type];
+  if(!colors[tile.type] || colors[tile.terrain]) {
+    console.log(tile, colors[tile.type] || colors[tile.terrain]);
+  }
+  ctx.fillStyle = colors[tile.type] || colors[tile.terrain] || colors.default;
   ctx.beginPath();
   ctx.strokeStyle = 'rgba(0,0,0,0.2)';
   ctx.fillRect(...topLeft, tileSize, tileSize);
@@ -126,7 +129,7 @@ seaTiles.forEach((tile) => {
   let topLeft = [x * tileSize, y * tileSize];
   let adjacentMask = generateTileBitmask(world.map, tile, 'land');
 
-  ctx.fillStyle = colors.land;
+  ctx.fillStyle = colors.plains;
 
   // [TODO] Automate this?
 

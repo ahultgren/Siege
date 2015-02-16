@@ -9,14 +9,14 @@ var transform = R.curry((fMin, fMax, tMin, tMax, value) => {
   return ((value - fMin)/(fMax - fMin)) * (tMax - tMin) + tMin;
 });
 
-exports.generate = (tiles, types) => {
-  var typeTransform = transform(-1, 1, 0, types.length - 1);
+exports.generate = (tiles, terrains) => {
+  var terrainTransform = transform(-1, 1, 0, terrains.length - 1);
 
   seed(Math.floor(Math.random() * 0xffff));
 
   tiles.forEach((tile) => {
-    var level = Math.round(typeTransform(noise(...tile.position)));
-    tile.type = types[level];
+    var level = Math.round(terrainTransform(noise(...tile.position)));
+    tile.terrain = terrains[level];
   });
 };
 

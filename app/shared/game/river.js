@@ -1,6 +1,6 @@
 'use strict';
 
-var isRiver = (tile) => tile.type === 'river';
+var isRiver = (tile) => tile.terrain === 'river';
 
 /**
  * Find "holes" in a river, where a land or forest tile is adjacent to two river
@@ -10,7 +10,7 @@ exports.connect = (map) => {
   let tiles = map.getAllTiles(map);
 
   tiles.forEach(tile => {
-    if(tile.type === 'forest' || tile.type === 'land') {
+    if(tile.type === 'land') {
       let adjacentTiles = map.getAdjacent(map, tile);
       let adjacentRivers = adjacentTiles.filter(isRiver);
 
@@ -24,7 +24,7 @@ exports.connect = (map) => {
 
           // Neither is already next to two rivers
           if(!adjacentAreBusy) {
-            tile.type = 'river';
+            tile.terrain = 'river';
           }
         }
       }
@@ -33,8 +33,8 @@ exports.connect = (map) => {
 
   tiles.forEach(tile => {
     // Remove lonely river tiles
-    if(tile.type === 'river' && !map.getAdjacent(map, tile).filter(isRiver).length) {
-      tile.type = 'forest';
+    if(isRiver(tile) && !map.getAdjacent(map, tile).filter(isRiver).length) {
+      tile.terrain = 'plains';
     }
   });
 };
