@@ -3,18 +3,19 @@
 var R = require('ramda');
 var game = require('../../shared/game');
 
-var width = 32;
-var height = 32;
+var width = 16;
+var height = 16;
 var tileSize = 40;
 var widthPx = width * tileSize;
 var heightPx = height * tileSize;
 
 var colors = {
   sea: '#039',
+  land: '#6f3',
   plains: '#6f3',
   forest: '#390',
-  hill: '#463',
-  mountain: '#333',
+  hill: '#522',
+  mountain: '#000',
   river: '#03f',
   default: '#000',
 };
@@ -60,11 +61,22 @@ allTiles.forEach((tile) => {
   let [x, y] = tile.position;
   let topLeft = [x * tileSize, y * tileSize];
 
-  ctx.fillStyle = colors[tile.type] || colors[tile.terrain] || colors.default;
+  ctx.fillStyle = colors[tile.type];
   ctx.beginPath();
   ctx.strokeStyle = 'rgba(0,0,0,0.2)';
   ctx.fillRect(...topLeft, tileSize, tileSize);
   ctx.strokeRect(...topLeft, tileSize, tileSize);
+});
+
+allTiles.filter(R.has('terrain'))
+.forEach((tile) => {
+  let [x, y] = tile.position;
+  let center = [x * tileSize + tileSize/2, y * tileSize + tileSize/2];
+
+  ctx.fillStyle = colors[tile.terrain];
+  ctx.beginPath();
+  ctx.arc(...center, 5, 0, Math.PI*2);
+  ctx.fill();
 });
 
 var drawPath = (ctx, start, ...points) => {
