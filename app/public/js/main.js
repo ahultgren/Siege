@@ -60,9 +60,6 @@ allTiles.forEach((tile) => {
   let [x, y] = tile.position;
   let topLeft = [x * tileSize, y * tileSize];
 
-  if(!colors[tile.type] || colors[tile.terrain]) {
-    console.log(tile, colors[tile.type] || colors[tile.terrain]);
-  }
   ctx.fillStyle = colors[tile.type] || colors[tile.terrain] || colors.default;
   ctx.beginPath();
   ctx.strokeStyle = 'rgba(0,0,0,0.2)';
@@ -81,10 +78,15 @@ landTiles.forEach((tile) => {
   let [x, y] = tile.position;
   let topLeft = [x * tileSize, y * tileSize];
   let adjacentMask = generateTileBitmask(world.map, tile, 'sea');
+  let adjacentSeaTiles = world.map.getAdjacent(world.map, tile).filter(tile => tile.type === 'sea');
 
   ctx.fillStyle = colors.sea;
 
   // [TODO] Automate this?
+
+  if(adjacentSeaTiles.length === 7) {
+    return;
+  }
 
   // Bottom right
   if((adjacentMask & (1|2|4)) === (1|2|4)) {
@@ -128,10 +130,15 @@ seaTiles.forEach((tile) => {
   let [x, y] = tile.position;
   let topLeft = [x * tileSize, y * tileSize];
   let adjacentMask = generateTileBitmask(world.map, tile, 'land');
+  let adjacentLandTiles = world.map.getAdjacent(world.map, tile).filter(tile => tile.type === 'land');
 
   ctx.fillStyle = colors.plains;
 
   // [TODO] Automate this?
+
+  if(adjacentLandTiles.length >= 7) {
+    return;
+  }
 
   // Bottom right
   if((adjacentMask & (1|4)) === (1|4)) {
