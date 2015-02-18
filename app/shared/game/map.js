@@ -28,7 +28,7 @@ exports.getTile = (map, [x, y]) => map.rows[y] && map.rows[y][x] || false;
 
 exports.getAllTiles = (map) => [].concat(...map.rows);
 
-exports.getAdjacent = (map, {position}) => {
+exports.getAllAdjacent = (map, {position}) => {
   let [x, y] = position;
 
   return [
@@ -40,8 +40,10 @@ exports.getAdjacent = (map, {position}) => {
     exports.getTile(map, [x - 1, y - 1]),
     exports.getTile(map, [x, y - 1]),
     exports.getTile(map, [x + 1, y - 1]),
-  ].filter(Boolean);
+  ];
 };
+
+exports.getAdjacent = (map, {position}) => exports.getAllAdjacent(map, {position}).filter(Boolean);
 
 exports.isNextToEachOther = (map, [a, b]) => {
   var nextToA = map.getAdjacent(map, a);

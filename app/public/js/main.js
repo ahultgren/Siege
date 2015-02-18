@@ -1,6 +1,5 @@
 'use strict';
 
-var R = require('ramda');
 var game = require('../../shared/game');
 
 var width = 16;
@@ -8,17 +7,6 @@ var height = 16;
 var tileSize = 40;
 var widthPx = width * tileSize;
 var heightPx = height * tileSize;
-
-var colors = {
-  sea: '#039',
-  land: '#6f3',
-  plains: '#6f3',
-  forest: '#390',
-  hill: '#522',
-  mountain: '#000',
-  river: '#03f',
-  default: '#000',
-};
 
 var world = game.create({
   width,
@@ -47,145 +35,6 @@ ctx.setTransform(a, d, b, e, c, f);
 
 // Draw tiles
 
-var generateTileBitmask = (map, tile, adjacentType) => {
-  return map.getAdjacent(map, tile)
-  .map(({type}, i) => +(type === adjacentType) * 1<<i)
-  .reduce(R.add);
-};
+var map = require('./map');
 
-var allTiles = [].concat(...world.map.rows);
-var landTiles = allTiles.filter(({type}) => type === 'land');
-var seaTiles = allTiles.filter(({type}) => type === 'sea');
-
-allTiles.forEach((tile) => {
-  let [x, y] = tile.position;
-  let topLeft = [x * tileSize, y * tileSize];
-
-  ctx.fillStyle = colors[tile.type];
-  ctx.beginPath();
-  ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-  ctx.fillRect(...topLeft, tileSize, tileSize);
-  ctx.strokeRect(...topLeft, tileSize, tileSize);
-});
-
-allTiles.filter(R.has('terrain'))
-.forEach((tile) => {
-  let [x, y] = tile.position;
-  let center = [x * tileSize + tileSize/2, y * tileSize + tileSize/2];
-
-  ctx.fillStyle = colors[tile.terrain];
-  ctx.beginPath();
-  ctx.arc(...center, 5, 0, Math.PI*2);
-  ctx.fill();
-});
-
-var drawPath = (ctx, start, ...points) => {
-  ctx.beginPath();
-  ctx.moveTo(...start);
-  points.forEach(point => ctx.lineTo(...point));
-  ctx.fill();
-};
-
-landTiles.forEach((tile) => {
-  let [x, y] = tile.position;
-  let topLeft = [x * tileSize, y * tileSize];
-  let adjacentMask = generateTileBitmask(world.map, tile, 'sea');
-  let adjacentSeaTiles = world.map.getAdjacent(world.map, tile).filter(tile => tile.type === 'sea');
-
-  ctx.fillStyle = colors.sea;
-
-  // [TODO] Automate this?
-
-  if(adjacentSeaTiles.length === 7) {
-    return;
-  }
-
-  // Bottom right
-  if((adjacentMask & (1|2|4)) === (1|2|4)) {
-    drawPath(ctx,
-      [topLeft[0] + tileSize, topLeft[1] + tileSize/2],
-      [topLeft[0] + tileSize, topLeft[1] + tileSize],
-      [topLeft[0] + tileSize/2, topLeft[1] + tileSize]
-    );
-  }
-
-  // Bottom left
-  if((adjacentMask & (4|8|16)) === (4|8|16)) {
-    drawPath(ctx,
-      [topLeft[0] + tileSize/2, topLeft[1] + tileSize],
-      [topLeft[0], topLeft[1] + tileSize],
-      [topLeft[0], topLeft[1] + tileSize/2]
-    );
-  }
-
-  // Top left
-  if((adjacentMask & (16|32|64)) === (16|32|64)) {
-    drawPath(ctx,
-      [topLeft[0], topLeft[1] + tileSize/2],
-      [topLeft[0], topLeft[1]],
-      [topLeft[0] + tileSize/2, topLeft[1]]
-    );
-  }
-
-  // Top right
-  if((adjacentMask & (64|128|1)) === (64|128|1)) {
-    drawPath(ctx,
-      [topLeft[0] + tileSize/2, topLeft[1]],
-      [topLeft[0] + tileSize, topLeft[1]],
-      [topLeft[0] + tileSize, topLeft[1] + tileSize/2]
-    );
-  }
-
-});
-
-seaTiles.forEach((tile) => {
-  let [x, y] = tile.position;
-  let topLeft = [x * tileSize, y * tileSize];
-  let adjacentMask = generateTileBitmask(world.map, tile, 'land');
-  let adjacentLandTiles = world.map.getAdjacent(world.map, tile).filter(tile => tile.type === 'land');
-
-  ctx.fillStyle = colors.plains;
-
-  // [TODO] Automate this?
-
-  if(adjacentLandTiles.length >= 7) {
-    return;
-  }
-
-  // Bottom right
-  if((adjacentMask & (1|4)) === (1|4)) {
-    drawPath(ctx,
-      [topLeft[0] + tileSize, topLeft[1] + tileSize/2],
-      [topLeft[0] + tileSize, topLeft[1] + tileSize],
-      [topLeft[0] + tileSize/2, topLeft[1] + tileSize]
-    );
-  }
-
-  // Bottom left
-  if((adjacentMask & (4|16)) === (4|16)) {
-    drawPath(ctx,
-      [topLeft[0] + tileSize/2, topLeft[1] + tileSize],
-      [topLeft[0], topLeft[1] + tileSize],
-      [topLeft[0], topLeft[1] + tileSize/2]
-    );
-  }
-
-  // Top left
-  if((adjacentMask & (16|64)) === (16|64)) {
-    drawPath(ctx,
-      [topLeft[0], topLeft[1] + tileSize/2],
-      [topLeft[0], topLeft[1]],
-      [topLeft[0] + tileSize/2, topLeft[1]]
-    );
-  }
-
-  // Top right
-  if((adjacentMask & (64|1)) === (64|1)) {
-    drawPath(ctx,
-      [topLeft[0] + tileSize/2, topLeft[1]],
-      [topLeft[0] + tileSize, topLeft[1]],
-      [topLeft[0] + tileSize, topLeft[1] + tileSize/2]
-    );
-  }
-
-});
+map.render(ctx, world, tileSize);
