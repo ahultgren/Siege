@@ -28,13 +28,29 @@ var cs = Math.cos(skewAngle);
 var sn = Math.sin(skewAngle);
 var h = Math.cos(heightAngle);
 
-var a = 1*cs, b = -1*sn, c = canvas.width/2;
-var d = h*1*sn, e = h*1*cs, f = 0;
+var a = 1*cs,   c = -1*sn,  e = canvas.width/2;
+var b = h*1*sn, d = h*1*cs, f = 0;
 
-ctx.setTransform(a, d, b, e, c, f);
+var matrix = require('./utils/matrix.js');
+
+var m = [a, b, c, d, e, f];
+var mI = matrix.inverse3x2(m);
+
+ctx.setTransform(...m);
 
 // Draw tiles
 
 var map = require('./map');
 
 map.render(ctx, world, tileSize);
+
+// Pointer handling
+
+ctx.fillStyle = '#a00';
+canvas.addEventListener('mousemove', ({pageX, pageY}) => {
+  var mapCoords = matrix.transform(mI, [pageX, pageY]);
+
+  ctx.beginPath();
+  ctx.arc(...mapCoords, 2, 0, Math.PI*2);
+  ctx.fill();
+});
