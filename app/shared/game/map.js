@@ -24,7 +24,7 @@ exports.create = function (settings = {width: 0, height: 0}) {
   return map;
 };
 
-exports.getTile = (map, [x, y]) => map.rows[y] && map.rows[y][x] || false;
+exports.getTile = R.curry((map, [x, y]) => map.rows[y] && map.rows[y][x] || false);
 
 exports.getAllTiles = (map) => [].concat(...map.rows);
 

@@ -5,13 +5,20 @@ var colors = require('./colors');
 var terrain = require('./terrain');
 
 var drawTile = R.curry((ctx, tileSize, tile) => {
-  let [x, y] = tile.position;
-  let topLeft = [x * tileSize, y * tileSize];
+  var [x, y] = tile.position;
+  var topLeft = [x * tileSize, y * tileSize];
 
   ctx.fillStyle = colors[tile.type];
   ctx.beginPath();
-  ctx.strokeStyle = 'rgba(0,0,0,0.2)';
   ctx.fillRect(...topLeft, tileSize, tileSize);
+});
+
+var drawGrid = R.curry((ctx, tileSize, tile) => {
+  var [x, y] = tile.position;
+  var topLeft = [x * tileSize, y * tileSize];
+
+  ctx.beginPath();
+  ctx.strokeStyle = tile.hovered ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0.2)';
   ctx.strokeRect(...topLeft, tileSize, tileSize);
 });
 
@@ -39,6 +46,7 @@ exports.render = function (ctx, world, tileSize) {
   // Draw tiles
 
   allTiles.forEach(drawTile(ctx, tileSize));
+  allTiles.forEach(drawGrid(ctx, tileSize));
 
   allTiles.filter(R.has('terrain')).forEach(terrain.render(ctx, tileSize));
 

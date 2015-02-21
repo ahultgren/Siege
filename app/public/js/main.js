@@ -1,6 +1,8 @@
 'use strict';
 
+var Bacon = require('baconjs');
 var game = require('../../shared/game');
+var Canvas = require('./canvas');
 
 var width = 16;
 var height = 16;
@@ -13,14 +15,11 @@ var world = game.create({
   height
 });
 
-var canvas = document.getElementById('world');
-var ctx = canvas.getContext('2d');
-
 var skewAngle = Math.PI/4;
 var heightAngle = Math.PI/4;
 
-canvas.width = canvas.offsetWidth = widthPx / Math.cos(skewAngle);
-canvas.height = canvas.offsetHeight = heightPx;
+var canvas = Canvas('#world', widthPx / Math.cos(skewAngle), heightPx);
+var ctx = canvas.getContext('2d');
 
 // Isometric canvas
 
@@ -46,11 +45,15 @@ map.render(ctx, world, tileSize);
 
 // Pointer handling
 
-ctx.fillStyle = '#a00';
-canvas.addEventListener('mousemove', ({pageX, pageY}) => {
-  var mapCoords = matrix.transform(mI, [pageX, pageY]);
+var getMapTile = world.map.getTile(world.map);
+var mousemoves = Bacon.fromEventTarget(canvas, 'mousemove');
+var pointerCanvasCoords = mousemoves.map(({pageX, pageY}) => [pageX, pageY]);
+var pointerMapCoords = pointerCanvasCoords.map(coords => matrix.transform(mI, coords));
+var pointerTileCoords = pointerMapCoords.map(([a, b]) => [Math.floor(a/tileSize), Math.floor(b/tileSize)]);
+var currentTile = pointerTileCoords.map(coords => getMapTile(coords));
 
-  ctx.beginPath();
-  ctx.arc(...mapCoords, 2, 0, Math.PI*2);
-  ctx.fill();
+currentTile.skipDuplicates().filter(Boolean).onValue(function (tile) {
+  tile.hovered = true;
+  map.render(ctx, world, tileSize);
+  tile.hovered = false;
 });
