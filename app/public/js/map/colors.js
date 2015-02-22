@@ -8,5 +8,6 @@ module.exports = {
   hill: '#522',
   mountain: '#000',
   river: '#03f',
+  water: '#039',
   default: '#000',
 };

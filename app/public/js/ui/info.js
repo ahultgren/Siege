@@ -7,23 +7,35 @@ var defence = {
   plains: 1,
   forest: 2,
   hill: 3,
-  mountain: '-'
+  mountain: '-',
+  water: '-',
 };
 
 var foraging = {
-  river: 3,
+  river: 2,
   plains: 1,
   forest: 3,
-  hill: 2,
-  mountain: '-'
+  hill: 1,
+  mountain: 0,
+  water: 1,
 };
 
 var harvest = {
-  river: 4,
-  plains: 3,
+  river: 3,
+  plains: 2,
   forest: 1,
   hill: 1,
-  mountain: '-'
+  mountain: 0,
+  water: 1,
+};
+
+var movementCost = {
+  river: 2,
+  plains: 1,
+  forest: 2,
+  hill: 2,
+  mountain: 20,
+  water: 20,
 };
 
 var renderCity = (city) => {
@@ -44,6 +56,8 @@ exports.init = (selector, activeTile, world) => {
     Foraging: ${foraging[tile.terrain]}
     <br>
     Harvest: ${harvest[tile.terrain]}
+    <br>
+    Movement cost: ${movementCost[tile.terrain]}
     ${city && renderCity(city) || ''}
     <h2>Units</h2>
     <ul>

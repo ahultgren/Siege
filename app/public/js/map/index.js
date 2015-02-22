@@ -57,9 +57,10 @@ exports.render = function (ctx, world, tileSize) {
   // Draw tiles
 
   allTiles.forEach(drawTile(ctx, tileSize));
-  allTiles.forEach(drawGrid(ctx, tileSize));
 
   allTiles.filter(R.has('terrain')).forEach(terrain.render(ctx, tileSize));
+
+  allTiles.forEach(drawGrid(ctx, tileSize));
 
   landTiles.forEach((tile) => {
     let [x, y] = tile.position;

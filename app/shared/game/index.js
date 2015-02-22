@@ -44,7 +44,9 @@ exports.create = ({width, height, players = 2}) => { // jshint ignore:line
   var centerTile = world.getTile(world, [Math.floor(width/2), Math.floor(height/2)]);
 
   // Turn world into sea
-  world.getAllTiles(world).forEach(setType('sea'));
+  var seaTiles = world.getAllTiles(world);
+  seaTiles.forEach(setType('sea'));
+  seaTiles.forEach(setTerrain('water'));
 
   // Make land
   var landTiles = makeWorldPatch(centerTile, noOfTiles/2, R.lPartial(setType, 'land'), 'sea');
