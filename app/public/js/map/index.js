@@ -18,7 +18,8 @@ var drawGrid = R.curry((ctx, tileSize, tile) => {
   var topLeft = [x * tileSize, y * tileSize];
 
   ctx.beginPath();
-  ctx.strokeStyle = tile.hovered ? 'rgba(0,0,0,1)' : 'rgba(0,0,0,0.2)';
+  ctx.strokeStyle = tile.hovered ? 'rgba(0,0,0,1)' :
+    tile.active ? 'rgba(255,0,0,1)' : 'rgba(0,0,0,0.2)';
   ctx.strokeRect(...topLeft, tileSize, tileSize);
 });
 

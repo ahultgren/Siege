@@ -46,6 +46,15 @@ state.currentTile.onValue((tile) => {
   tile.hovered = false;
 });
 
+//## How to make this cleaner?
+var lastActive = {};
+state.activeTile.onValue((tile) => {
+  lastActive.active = false;
+  tile.active = true;
+  lastActive = tile;
+  map.render(ctx, world, tileSize);
+});
+
 ui.init({
   state
 });
