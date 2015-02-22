@@ -26,17 +26,25 @@ var harvest = {
   mountain: '-'
 };
 
-exports.init = (selector, activeTile) => {
+var renderCity = (city) => {
+  return `<h2>City ${''}</h2>
+  Population: ${city.population}
+  `;
+};
+
+exports.init = (selector, activeTile, world) => {
   var elem = document.querySelector(selector);
 
   assign.assignContent(elem, activeTile.map((tile) => {
-    console.log(defence[tile.terrain]);
+    var city = world.getCityOn(world, tile);
+
     return `<h1>Tile: ${tile.position}</h1>
     Defence bonus: ${defence[tile.terrain]}
     <br>
     Foraging: ${foraging[tile.terrain]}
     <br>
     Harvest: ${harvest[tile.terrain]}
+    ${city && renderCity(city) || ''}
     <h2>Units</h2>
     <ul>
       <li>Placeholder</li>

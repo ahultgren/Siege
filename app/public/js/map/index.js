@@ -23,6 +23,16 @@ var drawGrid = R.curry((ctx, tileSize, tile) => {
   ctx.strokeRect(...topLeft, tileSize, tileSize);
 });
 
+var drawCity = R.curry((ctx, tileSize, city) => {
+  var [x, y] = city.position;
+  var center = [x * tileSize + tileSize/2, y * tileSize + tileSize/2];
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#000';
+  ctx.arc(...center, 15, 0, Math.PI * 2);
+  ctx.stroke();
+});
+
 var drawPath = (ctx, start, ...points) => {
   ctx.beginPath();
   ctx.moveTo(...start);
@@ -153,4 +163,7 @@ exports.render = function (ctx, world, tileSize) {
       );
     }
   });
+
+  // Render cities
+  world.getCurrentPlayer(world).cities.forEach(drawCity(ctx, tileSize));
 };

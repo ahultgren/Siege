@@ -1,10 +1,12 @@
 'use strict';
 
 var R = require('ramda');
-var map = require('./map');
+var map = require('./model/map');
 var patchmaker = require('./area').patch;
 var topology = require('./topology');
 var river = require('./river');
+var Player = require('./model/player');
+var City = require('./model/city');
 
 /* Helpers
 ============================================================================= */
@@ -33,7 +35,7 @@ var makePatch = R.curryN(4, (world, origin, size, setter, on) => {
 /* API
 ============================================================================= */
 
-exports.create = ({width, height}) => {
+exports.create = ({width, height, players = 2}) => { // jshint ignore:line
   var game = Object.create(exports);
 
   var world = game.map = map.create({ width, height });
@@ -51,7 +53,7 @@ exports.create = ({width, height}) => {
   landTiles.forEach(setTerrain('plains'));
 
   // Make topology
-  topology.generate(landTiles, ['river', 'river', 'river', 'river', 'plains', 'plains', 'plains', 'plains', 'plains', 'plains', 'hill', 'mountain', 'mountain', 'mountain']);
+  topology.generate(landTiles, ['river', 'river', 'river', 'river', 'plains', 'plains', 'plains', 'plains', 'plains', 'hill', 'mountain', 'mountain', 'mountain', 'mountain']);
 
   // Add forests
   range0(randomInt(3) + 4).forEach(() => {
@@ -61,5 +63,30 @@ exports.create = ({width, height}) => {
   // Connect rivers
   river.connect(world);
 
+  // Create players, give them a city each
+  game.players = R.range(0, players).map((id) => Player.create({id}));
+  game.currentPlayer = 0;
+
+  game.players.forEach((player) => {
+    var tile = getRandom(landTiles.filter(R.not(R.propEq('terrain', 'mountain'))));
+    var city = City.create(tile);
+
+    player.addCity(city);
+  });
+
   return game;
+};
+
+exports.getCurrentPlayer = (game) => {
+  return game.players[game.currentPlayer];
+};
+
+exports.getAllCities = (game) => {
+  return [].concat(...game.players.map(player => player.cities));
+};
+
+exports.getCityOn = (game, {position}) => {
+  //## Figure out which tiles are visible
+  return exports.getAllCities(game)
+    .filter(city => city.position[0] === position[0] && city.position[1] === position[1])[0];
 };

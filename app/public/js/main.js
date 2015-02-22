@@ -56,5 +56,6 @@ state.activeTile.onValue((tile) => {
 });
 
 ui.init({
-  state
+  state,
+  world
 });
