@@ -1,7 +1,7 @@
 'use strict';
 
 var R = require('ramda');
-var tile = require('./tile');
+var Tile = require('./tile');
 var range0 = R.times(R.identity);
 
 exports = module.exports = function Map (){
@@ -17,7 +17,10 @@ exports.create = function (settings = {width: 0, height: 0}) {
 
   map.rows = range0(map.height).map((y) => {
     return range0(map.width).map((x) => {
-      return tile.create(x, y);
+      return Tile.create({
+        map,
+        position: [x, y]
+      });
     });
   });
 

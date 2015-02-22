@@ -2,42 +2,6 @@
 
 var assign = require('../utils/assign');
 
-var defence = {
-  river: 0,
-  plains: 1,
-  forest: 2,
-  hill: 3,
-  mountain: '-',
-  water: '-',
-};
-
-var foraging = {
-  river: 2,
-  plains: 1,
-  forest: 3,
-  hill: 1,
-  mountain: 0,
-  water: 1,
-};
-
-var harvest = {
-  river: 3,
-  plains: 2,
-  forest: 1,
-  hill: 1,
-  mountain: 0,
-  water: 1,
-};
-
-var movementCost = {
-  river: 2,
-  plains: 1,
-  forest: 2,
-  hill: 2,
-  mountain: 20,
-  water: 20,
-};
-
 var renderCity = (city) => {
   return `<h2>City ${''}</h2>
   Population: ${city.population}
@@ -51,13 +15,13 @@ exports.init = (selector, activeTile, world) => {
     var city = world.getCityOn(world, tile);
 
     return `<h1>Tile: ${tile.position}</h1>
-    Defence bonus: ${defence[tile.terrain]}
+    Defence bonus: ${tile.defence}
     <br>
-    Foraging: ${foraging[tile.terrain]}
+    Foraging: ${tile.foraging}
     <br>
-    Harvest: ${harvest[tile.terrain]}
+    Harvest: ${tile.harvest}
     <br>
-    Movement cost: ${movementCost[tile.terrain]}
+    Movement cost: ${tile.movementCost}
     ${city && renderCity(city) || ''}
     <h2>Units</h2>
     <ul>

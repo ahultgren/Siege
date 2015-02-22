@@ -43,7 +43,7 @@ var drawPath = (ctx, start, ...points) => {
 exports.render = function (ctx, world, tileSize) {
 
   var generateTileBitmask = (map, tile, condition = (type) => type !== tile.type) => {
-    return map.getAllAdjacent(map, tile)
+    return tile.allAdjacent
     .map((adjacentTile, i) => {
       return +(condition(adjacentTile && adjacentTile.type || 'edge')) * 1<<i;
     })
@@ -63,10 +63,10 @@ exports.render = function (ctx, world, tileSize) {
   allTiles.forEach(drawGrid(ctx, tileSize));
 
   landTiles.forEach((tile) => {
-    let [x, y] = tile.position;
-    let topLeft = [x * tileSize, y * tileSize];
-    let adjacentMask = generateTileBitmask(world.map, tile);
-    let adjacentSeaTiles = world.map.getAllAdjacent(world.map, tile).filter(tile => !tile || tile.type !== 'land');
+    var [x, y] = tile.position;
+    var topLeft = [x * tileSize, y * tileSize];
+    var adjacentMask = generateTileBitmask(world.map, tile);
+    var adjacentSeaTiles = tile.allAdjacent.filter(tile => !tile || tile.type !== 'land');
 
     ctx.fillStyle = colors.sea;
 
@@ -115,10 +115,10 @@ exports.render = function (ctx, world, tileSize) {
   });
 
   seaTiles.forEach((tile) => {
-    let [x, y] = tile.position;
-    let topLeft = [x * tileSize, y * tileSize];
-    let adjacentMask = generateTileBitmask(world.map, tile, (type) => type === 'land');
-    let adjacentLandTiles = world.map.getAdjacent(world.map, tile).filter(tile => tile.type !== 'sea');
+    var [x, y] = tile.position;
+    var topLeft = [x * tileSize, y * tileSize];
+    var adjacentMask = generateTileBitmask(world.map, tile, (type) => type === 'land');
+    var adjacentLandTiles = tile.adjacent.filter(tile => tile.type !== 'sea');
 
     ctx.fillStyle = colors.plains;
 
