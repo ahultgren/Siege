@@ -12,7 +12,7 @@ exports.init = (selector, activeTile, world) => {
   var elem = document.querySelector(selector);
 
   assign.assignContent(elem, activeTile.map((tile) => {
-    var city = world.getCityOn(world, tile);
+    var city = world.getCityOn(tile);
 
     return `<h1>Tile: ${tile.position}</h1>
     Defence bonus: ${tile.defence}

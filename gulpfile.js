@@ -40,7 +40,10 @@ gulp.task('lint', function() {
       unused: true,
       trailing: true,
       node: true,
-      browser: true
+      browser: true,
+      globals: {
+        Map: true
+      }
     }))
     .on('error', handleError)
     .pipe(jshint.reporter('jshint-stylish'));
