@@ -3,16 +3,9 @@
 var Bacon = require('baconjs');
 var R = require('ramda');
 var assign = require('../utils/assign');
+var noop = x=>x;
 
 var targetMatches = R.curry((selector, {target}) => target.matches(selector));
-var join = (head) => {
-  var headValue;
-  head.onValue(v => headValue = v);
-
-  return (...tail) => {
-    return [headValue, ...tail];
-  };
-};
 
 var renderCity = (city) => {
   var producing = '';
@@ -28,7 +21,7 @@ var renderCity = (city) => {
   <hr>
   <div><button action="build-army">Build army</button></div>
   <div><button
-    action="setFocus-${city.focus !== 'gold' ? 'gold' : 'food'}"
+    action="setFocus(${city.focus !== 'gold' ? 'gold' : 'food'})"
     >Focus on: ${city.focus !== 'gold' ? 'Gold' : 'Food'}</button></div>
   `;
 };
@@ -36,21 +29,21 @@ var renderCity = (city) => {
 exports.init = (selector, activeTile, world) => {
   var elem = document.querySelector(selector);
   var clicks = Bacon.fromEventTarget(elem, 'click');
+  var activeCity = activeTile.map(tile => world.getCityOn(tile)).toProperty();
 
-  activeTile.sampledBy(clicks.filter(targetMatches('[action="build-army"]')))
-  .map(tile => world.getCityOn(tile))
+  activeCity.sampledBy(clicks.filter(targetMatches('[action="build-army"]')))
   .filter(city => !city.production)
   .onValue((city) => {
     city.produce('army');
   });
 
-  var makeGold = clicks.filter(targetMatches('[action="setFocus-gold"]')).map('gold');
-  var makeFood = clicks.filter(targetMatches('[action="setFocus-food"]')).map('food');
+  var makeGold = clicks.filter(targetMatches('[action="setFocus(gold)"]')).map('gold');
+  var makeFood = clicks.filter(targetMatches('[action="setFocus(food)"]')).map('food');
 
-  makeFood.merge(makeGold).map(join(activeTile)).onValue(([tile, whatToMake]) => {
-    var city = world.getCityOn(tile);
-    city.focus = whatToMake;
-  });
+  Bacon.when(
+    [activeCity, makeFood.merge(makeGold)],
+    (city, whatToMake) => city.focus = whatToMake
+  ).onValue(noop);
 
   // [TODO] Listen on model changes of active tile somehow?
   var reRenderEvents = activeTile.sampledBy(activeTile.merge(clicks));
