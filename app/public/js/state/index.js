@@ -3,9 +3,10 @@
 var Bacon = require('baconjs');
 var matrix = require('../utils/matrix.js');
 
+var pickCoords = ({pageX, pageY}) => [pageX, pageY];
+
 exports.init = ({world, m, mI, tileSize, canvas}) => {
   var getMapTile = world.map.getTile(world.map);
-  var pickCoords = ({pageX, pageY}) => [pageX, pageY];
   var inverseCoords = coords => matrix.transform(mI, coords);
   var normalizeCoords = ([a, b]) => [Math.floor(a/tileSize), Math.floor(b/tileSize)];
 

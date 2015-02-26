@@ -166,5 +166,5 @@ exports.render = function (ctx, world, tileSize) {
   });
 
   // Render cities
-  world.getCurrentPlayer().cities.forEach(drawCity(ctx, tileSize));
+  world.getAllCities().forEach(drawCity(ctx, tileSize));
 };
