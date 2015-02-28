@@ -100,7 +100,7 @@ class Game {
     var noOfTiles = width * height;
     var centerTile = this.map.getTile(this.map, [Math.floor(width/2), Math.floor(height/2)]);
 
-    makePatch(this.map, centerTile, noOfTiles/2, R.lPartial(setType, 'land'), 'sea')
+    makePatch(this.map, centerTile, noOfTiles/2, R.partial(setType, 'land'), 'sea')
     .forEach(setTerrain('plains'));
   }
 
@@ -129,7 +129,7 @@ class Game {
     var landTiles = this.map.getAllTiles(this.map).filter(R.propEq('type', 'land'));
 
     range0(randomInt(3) + 4).forEach(() => {
-      makePatch(this.map, getRandom(landTiles), randomInt(10) + 10, R.lPartial(setTerrain, 'forest'), 'land');
+      makePatch(this.map, getRandom(landTiles), randomInt(10) + 10, R.partial(setTerrain, 'forest'), 'land');
     });
   }
 

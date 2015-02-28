@@ -1,7 +1,6 @@
 'use strict';
 
 var Bacon = require('baconjs');
-var R = require('ramda');
 var matrix = require('../utils/matrix.js');
 
 var pickCoords = ({pageX, pageY}) => [pageX, pageY];
