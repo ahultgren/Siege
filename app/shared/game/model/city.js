@@ -52,7 +52,7 @@ class City {
 
   beginTurn () {
     if(!this.turnHasBegun) {
-      this.population *= POPULATION_INCREASE_FACTOR;
+      this.population += Math.round(POPULATION_INCREASE_FACTOR * this.population);
       this.food += this.foodOutput;
       this.food -= this.population;
       this.turnHasBegun = true;
@@ -63,6 +63,7 @@ class City {
 
       if(this.production && !this.productionFinishedIn) {
         // [TODO] Deploy stuff
+        this.production = '';
       }
     }
   }

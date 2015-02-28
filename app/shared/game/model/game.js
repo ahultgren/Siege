@@ -59,6 +59,7 @@ class Game {
     this.makeForests_();
     this.makeRivers_();
     this.makePlayers_();
+    this.getCurrentPlayer().beginTurn();
   }
 
   getCurrentPlayer () {
@@ -73,6 +74,18 @@ class Game {
     //## Figure out which tiles are visible
     return this.getAllCities()
       .filter(city => city.position[0] === position[0] && city.position[1] === position[1])[0];
+  }
+
+  endTurn () {
+    this.getCurrentPlayer().endTurn();
+    //## For each unit?
+
+    this.currentPlayer++;
+    if(this.currentPlayer === this.noOfPlayers) {
+      this.currentPlayer = 0;
+    }
+
+    this.getCurrentPlayer().beginTurn();
   }
 
   setCityProduction ({position}, stuff) {

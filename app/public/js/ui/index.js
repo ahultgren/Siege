@@ -1,6 +1,7 @@
 'use strict';
 
 exports.init = ({state, world}) => {
-  require('./status.js').init('#status', state.currentTile);
-  require('./info.js').init('#info', state.activeTile, world);
+  require('./status').init('#status', state.currentTile);
+  require('./info').init('#info', state.activeTile, world);
+  require('./player').init('#player', state.activeTile, world);
 };
