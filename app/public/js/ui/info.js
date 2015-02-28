@@ -19,7 +19,7 @@ var renderCity = (city) => {
   <div>Focus: ${city.focus}</div>
   ${producing}
   <hr>
-  <div><button action="build-army">Build army</button></div>
+  <div><button action="build-army" ${city.production && 'disabled' || ''}>Build army</button></div>
   <div><button
     action="setFocus(${city.focus !== 'gold' ? 'gold' : 'food'})"
     >Focus on: ${city.focus !== 'gold' ? 'Gold' : 'Food'}</button></div>
@@ -29,20 +29,18 @@ var renderCity = (city) => {
 exports.init = (selector, activeTile, world) => {
   var elem = document.querySelector(selector);
   var clicks = Bacon.fromEventTarget(elem, 'click');
-  var activeCity = activeTile.map(tile => world.getCityOn(tile)).toProperty();
 
-  activeCity.sampledBy(clicks.filter(targetMatches('[action="build-army"]')))
-  .filter(city => !city.production)
-  .onValue((city) => {
-    city.produce('army');
+  activeTile.sampledBy(clicks.filter(targetMatches('[action="build-army"]')))
+  .onValue((tile) => {
+    world.setCityProduction(tile, 'army');
   });
 
   var makeGold = clicks.filter(targetMatches('[action="setFocus(gold)"]')).map('gold');
   var makeFood = clicks.filter(targetMatches('[action="setFocus(food)"]')).map('food');
 
   Bacon.when(
-    [activeCity, makeFood.merge(makeGold)],
-    (city, whatToMake) => city.focus = whatToMake
+    [activeTile.toProperty(), makeFood.merge(makeGold)],
+    (tile, whatToMake) => world.setCityFocus(tile, whatToMake)
   ).onValue(noop);
 
   // [TODO] Listen on model changes of active tile somehow?

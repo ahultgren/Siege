@@ -75,6 +75,16 @@ class Game {
       .filter(city => city.position[0] === position[0] && city.position[1] === position[1])[0];
   }
 
+  setCityProduction ({position}, stuff) {
+    var city = this.getCityOn({position});
+    city.produce(stuff);
+  }
+
+  setCityFocus ({position}, whatToMake) {
+    var city = this.getCityOn({position});
+    city.focus = whatToMake;
+  }
+
   /* Private
   ============================================================================= */
 
