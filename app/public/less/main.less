@@ -1,26 +1,73 @@
 body {
   margin: 0;
+  font: 100%/1.4 Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3 {
+  margin: 10px 0;
+  font-weight: 100;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .world {
   background-color: #eee;
-  position: absolute;
-  z-index: 0;
+  display: block;
+  margin: auto;
 }
 
+@info-height: 160px;
+
 .status {
-  width: 300px;
-  padding: 10px;
+  padding: 5px;
   position: fixed;
-  bottom: 0;
+  bottom: @info-height;
   right: 0;
   z-index: 10;
+  text-align: right;
 }
 
 .info {
-  padding: 10px;
-  position: absolute;
-  top: 0;
+  background-color: #fff;
+  border-top: 3px solid #999;
+  display: flex;
+  height: @info-height;
+  position: fixed;
+  bottom: 0;
   right: 0;
+  left: 0;
   z-index: 10;
+
+  &-box {
+    padding: 10px;
+    flex: 1;
+  }
+
+  &-tile {
+
+  }
+
+  &-city {
+
+  }
+
+  &-unit {
+
+  }
+
+  &:empty {
+    display: none;
+
+    &~.bottom-margin {
+      height: 0;
+    }
+
+    &~.status {
+      bottom: 0;
+    }
+  }
+}
+
+.bottom-margin {
+  height: @info-height;
 }
