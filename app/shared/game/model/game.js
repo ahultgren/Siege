@@ -125,6 +125,7 @@ class Game {
       'river',
       'river',
       'river',
+      'river',
       'plains',
       'plains',
       'plains',
@@ -140,9 +141,11 @@ class Game {
 
   makeForests_ () {
     var landTiles = this.map.getAllTiles(this.map).filter(R.propEq('type', 'land'));
+    var variation = this.map.width/2;
+    var min = this.map.height/2;
 
-    range0(randomInt(3) + 4).forEach(() => {
-      makePatch(this.map, getRandom(landTiles), randomInt(10) + 10, R.partial(setTerrain, 'forest'), 'land');
+    range0(randomInt(3) + 3).forEach(() => {
+      makePatch(this.map, getRandom(landTiles), randomInt(variation) + min, R.partial(setTerrain, 'forest'), 'land');
     });
   }
 
