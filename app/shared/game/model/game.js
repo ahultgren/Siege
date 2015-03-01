@@ -9,6 +9,7 @@ var City = require('./city');
 var patchmaker = require('../area').patch;
 var topography = require('../topography');
 var river = require('../river');
+var types = require('./types');
 
 var range0 = R.times(R.identity);
 var setType = R.curry((value, target) => target.type = value);
@@ -59,7 +60,7 @@ class Game {
     this.makeForests_();
     this.makeRivers_();
     this.makePlayers_();
-    this.getCurrentPlayer().beginTurn();
+    this.beginTurn();
   }
 
   getCurrentPlayer () {
@@ -70,22 +71,35 @@ class Game {
     return [].concat(...this.players.map(player => player.cities));
   }
 
+  getAllUnits () {
+    return [].concat(...this.players.map(player => player.units));
+  }
+
   getCityOn ({position}) {
     //## Figure out which tiles are visible
     return this.getAllCities()
       .filter(city => city.position[0] === position[0] && city.position[1] === position[1])[0];
   }
 
+  getUnitsOn ({position}) {
+    //## Figure out which tiles are visible
+    return this.getAllUnits()
+      .filter(unit => unit.position[0] === position[0] && unit.position[1] === position[1]);
+  }
+
+  beginTurn () {
+    this.getCurrentPlayer().beginTurn(this);
+  }
+
   endTurn () {
     this.getCurrentPlayer().endTurn();
-    //## For each unit?
 
     this.currentPlayer++;
     if(this.currentPlayer === this.noOfPlayers) {
       this.currentPlayer = 0;
     }
 
-    this.getCurrentPlayer().beginTurn();
+    this.beginTurn();
   }
 
   setCityProduction ({position}, stuff) {
@@ -96,6 +110,19 @@ class Game {
   setCityFocus ({position}, whatToMake) {
     var city = this.getCityOn({position});
     city.focus = whatToMake;
+  }
+
+  deploy ({position}, type) {
+    var unit = types[type].create({position});
+
+    switch (type) {
+      case 'city':
+        this.getCurrentPlayer().addCity(unit);
+        break;
+      case 'army':
+        this.getCurrentPlayer().addUnit(unit);
+        break;
+    }
   }
 
   /* Private

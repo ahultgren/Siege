@@ -33,6 +33,21 @@ var drawCity = R.curry((ctx, tileSize, city) => {
   ctx.stroke();
 });
 
+var drawUnit = R.curry((ctx, tileSize, city) => {
+  var [x, y] = city.position;
+  var cX = x * tileSize + tileSize / 2;
+  var cY = y * tileSize + tileSize / 2;
+  var offset = tileSize / 4;
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#f00';
+  ctx.moveTo(cX - offset, cY - offset);
+  ctx.lineTo(cX + offset, cY + offset);
+  ctx.moveTo(cX + offset, cY - offset);
+  ctx.lineTo(cX - offset, cY + offset);
+  ctx.stroke();
+});
+
 var drawPath = (ctx, start, ...points) => {
   ctx.beginPath();
   ctx.moveTo(...start);
@@ -167,4 +182,7 @@ exports.render = function (ctx, world, tileSize) {
 
   // Render cities
   world.getAllCities().forEach(drawCity(ctx, tileSize));
+
+  // Render units
+  world.getAllUnits().forEach(drawUnit(ctx, tileSize));
 };

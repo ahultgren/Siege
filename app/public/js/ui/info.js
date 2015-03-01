@@ -7,8 +7,13 @@ var noop = x=>x;
 
 var targetMatches = R.curry((selector, {target}) => target.matches(selector));
 
-var renderCity = (city) => {
+var renderCity = (city, world) => {
+  if(!city) {
+    return '';
+  }
+
   var producing = '';
+  var player = world.players.filter((player) => player.cities.indexOf(city) > -1)[0];
 
   if(city.production) {
     producing = `<div>Producing: ${city.production}</div>`;
@@ -17,6 +22,7 @@ var renderCity = (city) => {
   return `${/*thanks jshint*/''}
     <div class="info-box info-city">
       <h2>City ${''}</h2>
+      <div>Player: ${player.id}</div>
       <div>Population: ${city.population}</div>
       <div>Focus: ${city.focus}</div>
       ${producing}
@@ -24,6 +30,27 @@ var renderCity = (city) => {
       <div><button
         action="setFocus(${city.focus !== 'gold' ? 'gold' : 'food'})"
         >Focus on: ${city.focus !== 'gold' ? 'Gold' : 'Food'}</button></div>
+    </div>
+  `;
+};
+
+var renderUnits = (units) => {
+  if(!units.length) {
+    return '';
+  }
+
+  var unitString = units.map((unit) => {
+    return `${/*thanks jshint*/''}
+      <li>${unit.type}</li>
+    `;
+  }).join('');
+
+  return `${/*thanks jshint*/''}
+    <div class="info-box info-units">
+      <h2>Units</h2>
+      <ul>
+        ${unitString}
+      </ul>
     </div>
   `;
 };
@@ -46,10 +73,12 @@ exports.init = (selector, activeTile, world) => {
   ).onValue(noop);
 
   // [TODO] Listen on model changes of active tile somehow?
+  // [TODO] Also needs to listen on turn changes
   var reRenderEvents = activeTile.sampledBy(activeTile.merge(clicks));
 
   assign.assignContent(elem, reRenderEvents.map((tile) => {
     var city = world.getCityOn(tile);
+    var units = world.getUnitsOn(tile);
 
     return `${/*thanks jshint*/''}
       <div class="info-box info-tile">
@@ -62,14 +91,8 @@ exports.init = (selector, activeTile, world) => {
         <br>
         Movement cost: ${tile.movementCost}
       </div>
-      ${city && renderCity(city) || ''}
-      <div class="info-box info-units">
-        <h2>Units</h2>
-        <ul>
-          <li>Placeholder</li>
-          <li>Placeholder</li>
-        </ul>
-      </div>
+      ${renderCity(city, world)}
+      ${renderUnits(units)}
     `;
   }));
 };

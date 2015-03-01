@@ -25,9 +25,13 @@ class Player {
     this.cities.push(city);
   }
 
-  beginTurn () {
+  addUnit (unit) {
+    this.units.push(unit);
+  }
+
+  beginTurn (game) {
     if(!this.turnHasBegun) {
-      this.cities.forEach(city => city.beginTurn());
+      this.cities.forEach(city => city.beginTurn(game));
       this.gold += this.cities.map(R.prop('goldOutput')).reduce(R.add, 0);
       this.turnHasBegun = true;
     }

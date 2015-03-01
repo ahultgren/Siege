@@ -50,7 +50,7 @@ class City {
     }
   }
 
-  beginTurn () {
+  beginTurn (game) {
     if(!this.turnHasBegun) {
       this.population += Math.round(POPULATION_INCREASE_FACTOR * this.population);
       this.food += this.foodOutput;
@@ -63,6 +63,7 @@ class City {
 
       if(this.production && !this.productionFinishedIn) {
         // [TODO] Deploy stuff
+        game.deploy(this, this.production);
         this.production = '';
       }
     }
