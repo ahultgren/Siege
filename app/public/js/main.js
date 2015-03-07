@@ -11,14 +11,12 @@ var height = 16;
 var tileSize = 40;
 
 // World
-
 var world = game.create({
   width,
   height
 });
 
 // Canvas
-
 var {canvas, ctx, m, mI} = Canvas.create({
   selector: '#world',
   width,
@@ -26,33 +24,13 @@ var {canvas, ctx, m, mI} = Canvas.create({
   tileSize
 });
 
-// Draw tiles
-
-map.render(ctx, world, tileSize);
-
 // State
+var state = State.init();
 
-var state = State.init({
-  canvas: canvas,
-  world,
-  m,
-  mI,
-  tileSize
-});
+// Map
+map.init({state, canvas, ctx, world, tileSize, m, mI});
 
-state.currentTile.onValue((tile) => {
-  tile.hovered = true;
-  map.render(ctx, world, tileSize);
-  tile.hovered = false;
-});
-
-state.activeTile.scan({}, (lastActive, tile) => {
-  lastActive.active = false;
-  tile.active = true;
-  map.render(ctx, world, tileSize);
-  return tile;
-}).onValue(() => {});
-
+// UI
 ui.init({
   state,
   world

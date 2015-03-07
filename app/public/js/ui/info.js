@@ -41,7 +41,7 @@ var renderUnits = (units) => {
 
   var unitString = units.map((unit) => {
     return `${/*thanks jshint*/''}
-      <li>${unit.type}</li>
+      <li id="${unit.id}" action="moveUnit">${unit.type} (${unit.movesLeft})</li>
     `;
   }).join('');
 
@@ -55,7 +55,7 @@ var renderUnits = (units) => {
   `;
 };
 
-exports.init = (selector, activeTile, world) => {
+exports.init = (selector, {activeTile, activeUnit}, world) => {
   var elem = document.querySelector(selector);
   var clicks = Bacon.fromEventTarget(elem, 'click');
 
@@ -71,6 +71,13 @@ exports.init = (selector, activeTile, world) => {
     [activeTile.toProperty(), makeFood.merge(makeGold)],
     (tile, whatToMake) => world.setCityFocus(tile, whatToMake)
   ).onValue(noop);
+
+  clicks.filter(targetMatches('[action="moveUnit"]'))
+  .map(R.prop('id'))
+  .merge(clicks.filter(targetMatches(':not([action="moveUnit"])')).map(R.always(false)))
+  .onValue((v) => {
+    console.log(v);
+  });
 
   // [TODO] Listen on model changes of active tile somehow?
   // [TODO] Also needs to listen on turn changes
