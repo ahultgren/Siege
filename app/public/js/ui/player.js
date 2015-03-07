@@ -19,7 +19,7 @@ var render = (world) => {
   `;
 };
 
-exports.init = (selector, activeTile, world) => {
+exports.init = (selector, state, world) => {
   var elem = document.querySelector(selector);
   var clicks = Bacon.fromEventTarget(elem, 'click');
   var renderBox = R.partial(render, world);
@@ -27,7 +27,9 @@ exports.init = (selector, activeTile, world) => {
 
   endTurn.onValue(() => world.endTurn());
 
+  state.endTurn.plug(endTurn);
+
   // [TODO] Listen to player or world model changes
   elem.innerHTML = renderBox();
-  assign.assignContent(elem, activeTile.merge(endTurn).map(renderBox));
+  assign.assignContent(elem, state.activeTile.merge(endTurn).map(renderBox));
 };

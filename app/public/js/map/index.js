@@ -23,20 +23,19 @@ exports.init = ({state, canvas, ctx, world, tileSize, m, mI}) => {
   state.currentTile.plug(currentTile.skipDuplicates().filter(Boolean));
   state.activeTile.plug(activeTile.skipDuplicates().filter(Boolean));
 
-  // Render map
-
-  render(ctx, world, tileSize);
-
-  state.currentTile.onValue((tile) => {
+  var hoveredChanged = state.currentTile.scan({}, (lastTile, tile) => {
+    lastTile.hovered = false;
     tile.hovered = true;
-    render(ctx, world, tileSize);
-    tile.hovered = false;
+    return tile;
   });
 
-  state.activeTile.scan({}, (lastActive, tile) => {
+  var activeChanged = state.activeTile.scan({}, (lastActive, tile) => {
     lastActive.active = false;
     tile.active = true;
-    render(ctx, world, tileSize);
     return tile;
-  }).onValue(() => {});
+  });
+
+  Bacon.combineWith(x=>x, hoveredChanged, activeChanged, state.endTurn.toProperty(0)).onValue(() => {
+    render(ctx, world, tileSize);
+  });
 };
