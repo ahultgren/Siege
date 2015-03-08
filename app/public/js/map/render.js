@@ -13,12 +13,12 @@ var drawTile = R.curry((ctx, tileSize, tile) => {
   ctx.fillRect(...topLeft, tileSize, tileSize);
 });
 
-var drawGrid = R.curry((ctx, tileSize, tile) => {
+var drawGrid = R.curry((ctx, tileSize, activeUnit, tile) => {
   var [x, y] = tile.position;
   var topLeft = [x * tileSize, y * tileSize];
 
   ctx.beginPath();
-  ctx.strokeStyle = tile.hovered ? 'rgba(0,0,0,1)' :
+  ctx.strokeStyle = tile.hovered ? (activeUnit ? '#0ff' : 'rgba(0,0,0,1)') :
     tile.active ? 'rgba(255,0,0,1)' : 'rgba(0,0,0,0.2)';
   ctx.strokeRect(...topLeft, tileSize, tileSize);
 });
@@ -55,7 +55,7 @@ var drawPath = (ctx, start, ...points) => {
   ctx.fill();
 };
 
-module.exports = function (ctx, world, tileSize) {
+module.exports = function (ctx, world, tileSize, activeUnit) {
   var generateTileBitmask = (map, tile, condition = (type) => type !== tile.type) => {
     return tile.allAdjacent
     .map((adjacentTile, i) => {
@@ -74,7 +74,7 @@ module.exports = function (ctx, world, tileSize) {
 
   allTiles.filter(R.has('terrain')).forEach(terrain.render(ctx, tileSize));
 
-  allTiles.forEach(drawGrid(ctx, tileSize));
+  allTiles.forEach(drawGrid(ctx, tileSize, activeUnit));
 
   landTiles.forEach((tile) => {
     var [x, y] = tile.position;

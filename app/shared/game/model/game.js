@@ -87,6 +87,11 @@ class Game {
       .filter(unit => unit.position[0] === position[0] && unit.position[1] === position[1]);
   }
 
+  getUnitById (id) {
+    //## Figure out which tiles are visible
+    return this.getAllUnits().filter(unit => unit.id === id)[0];
+  }
+
   beginTurn () {
     this.getCurrentPlayer().beginTurn(this);
   }

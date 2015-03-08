@@ -35,7 +35,12 @@ exports.init = ({state, canvas, ctx, world, tileSize, m, mI}) => {
     return tile;
   });
 
-  Bacon.combineWith(x=>x, hoveredChanged, activeChanged, state.endTurn.toProperty(0)).onValue(() => {
-    render(ctx, world, tileSize);
+  Bacon.combineAsArray(
+    state.activeUnit.toProperty(false),
+    hoveredChanged,
+    activeChanged,
+    state.endTurn.toProperty(0)
+  ).onValue(([activeUnit]) => {
+    render(ctx, world, tileSize, activeUnit);
   });
 };

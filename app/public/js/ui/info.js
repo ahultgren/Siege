@@ -40,8 +40,13 @@ var renderUnits = (units) => {
   }
 
   var unitString = units.map((unit) => {
+    console.log('mju', unit.active);
     return `${/*thanks jshint*/''}
-      <li id="${unit.id}" action="moveUnit">${unit.type} (${unit.movesLeft})</li>
+      <li
+        id="${unit.id}"
+        class="info-unit ${unit.active ? 'info-unit--active' : ''}"
+        action="moveUnit"
+      >${unit.type} (${unit.movesLeft})</li>
     `;
   }).join('');
 
@@ -55,7 +60,7 @@ var renderUnits = (units) => {
   `;
 };
 
-exports.init = (selector, {activeTile, activeUnit}, world) => {
+exports.init = (selector, {activeTile, activeUnit, endTurn}, world) => {
   var elem = document.querySelector(selector);
   var clicks = Bacon.fromEventTarget(elem, 'click');
 
@@ -72,16 +77,28 @@ exports.init = (selector, {activeTile, activeUnit}, world) => {
     (tile, whatToMake) => world.setCityFocus(tile, whatToMake)
   ).onValue(noop);
 
-  clicks.filter(targetMatches('[action="moveUnit"]'))
-  .map(R.prop('id'))
-  .merge(clicks.filter(targetMatches(':not([action="moveUnit"])')).map(R.always(false)))
-  .onValue((v) => {
-    console.log(v);
+  activeUnit.plug(
+    clicks.filter(targetMatches('[action="moveUnit"]'))
+    .map(R.path('target.id'))
+    .map(world.getUnitById.bind(world))
+    .merge(clicks.filter(targetMatches(':not([action="moveUnit"])'))
+      .merge(activeTile).map(R.always(false)))
+  );
+
+  var activeChanged = activeUnit.scan({}, (lastActive, unit) => {
+    lastActive.active = false;
+
+    if(unit) {
+      unit.active = true;
+      return unit;
+    }
+    else {
+      return {};
+    }
   });
 
   // [TODO] Listen on model changes of active tile somehow?
-  // [TODO] Also needs to listen on turn changes
-  var reRenderEvents = activeTile.sampledBy(activeTile.merge(clicks));
+  var reRenderEvents = activeTile.sampledBy(activeTile.merge(clicks).merge(endTurn).merge(activeChanged.changes()));
 
   assign.assignContent(elem, reRenderEvents.map((tile) => {
     var city = world.getCityOn(tile);
