@@ -2,7 +2,7 @@
 
 var Bacon = require('baconjs');
 var R = require('ramda');
-var assign = require('../utils/assign');
+var $ = require('../utils/elem');
 var noop = x=>x;
 
 var targetMatches = R.curry((selector, {target}) => target.matches(selector));
@@ -40,7 +40,6 @@ var renderUnits = (units) => {
   }
 
   var unitString = units.map((unit) => {
-    console.log('mju', unit.active);
     return `${/*thanks jshint*/''}
       <li
         id="${unit.id}"
@@ -61,8 +60,8 @@ var renderUnits = (units) => {
 };
 
 exports.init = (selector, {activeTile, activeUnit, endTurn}, world) => {
-  var elem = document.querySelector(selector);
-  var clicks = Bacon.fromEventTarget(elem, 'click');
+  var elem = $(selector);
+  var clicks = Bacon.fromEventTarget(elem.get(), 'click');
 
   activeTile.sampledBy(clicks.filter(targetMatches('[action="build-army"]')))
   .onValue((tile) => {
@@ -100,7 +99,7 @@ exports.init = (selector, {activeTile, activeUnit, endTurn}, world) => {
   // [TODO] Listen on model changes of active tile somehow?
   var reRenderEvents = activeTile.sampledBy(activeTile.merge(clicks).merge(endTurn).merge(activeChanged.changes()));
 
-  assign.assignContent(elem, reRenderEvents.map((tile) => {
+  reRenderEvents.map((tile) => {
     var city = world.getCityOn(tile);
     var units = world.getUnitsOn(tile);
 
@@ -118,5 +117,5 @@ exports.init = (selector, {activeTile, activeUnit, endTurn}, world) => {
       ${renderCity(city, world)}
       ${renderUnits(units)}
     `;
-  }));
+  }).assign(elem, 'html');
 };

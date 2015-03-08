@@ -2,7 +2,7 @@
 
 var Bacon = require('baconjs');
 var R = require('ramda');
-var assign = require('../utils/assign');
+var $ = require('../utils/elem');
 
 var targetMatches = R.curry((selector, {target}) => target.matches(selector));
 
@@ -20,8 +20,8 @@ var render = (world) => {
 };
 
 exports.init = (selector, state, world) => {
-  var elem = document.querySelector(selector);
-  var clicks = Bacon.fromEventTarget(elem, 'click');
+  var elem = $(selector);
+  var clicks = Bacon.fromEventTarget(elem.get(), 'click');
   var renderBox = R.partial(render, world);
   var endTurn = clicks.filter(targetMatches('[action="endTurn"]'));
 
@@ -30,6 +30,6 @@ exports.init = (selector, state, world) => {
   state.endTurn.plug(endTurn);
 
   // [TODO] Listen to player or world model changes
-  elem.innerHTML = renderBox();
-  assign.assignContent(elem, state.activeTile.merge(endTurn).map(renderBox));
+  elem.html(renderBox());
+  state.activeTile.merge(endTurn).map(renderBox).assign(elem, 'html');
 };

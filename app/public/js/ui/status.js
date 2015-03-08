@@ -1,14 +1,14 @@
 'use strict';
 
-var assign = require('../utils/assign');
+var $ = require('../utils/elem');
 
 exports.init = (selector, currentTile) => {
-  var elem = document.querySelector(selector);
+  var elem = $(selector);
 
-  assign.assignContent(elem, currentTile.map((tile) => {
+  currentTile.map((tile) => {
     return `Position: ${tile.position.toString()}.
       Type: ${tile.type}.
       Terrain: ${tile.terrain || tile.type}
     `;
-  }));
+  }).assign(elem, 'html');
 };
